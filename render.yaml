@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: django-todo
+    env: python
+    buildCommand: ./build.sh
+    startCommand: gunicorn todolist.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false 
