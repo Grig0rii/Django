@@ -3,104 +3,84 @@
 {% block title %}Список задач{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <h1 class="h3"><i class="bi bi-list-check"></i> Мои задачи</h1>
-            <a href="{% url 'task_create' %}" class="btn btn-primary">
-                <i class="bi bi-plus-lg"></i> Новая задача
-            </a>
+<div class="container mt-4">
+    <h1>Список задач</h1>
+    
+    <!-- Поиск и фильтры -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Поиск..." value="{{ search_query }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="category" class="form-select">
+                        <option value="">Все категории</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"i" %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="priority" class="form-select">
+                        <option value="">Все приоритеты</option>
+                        <option value="low" {% if request.GET.priority == 'low' %}selected{% endif %}>Низкий</option>
+                        <option value="medium" {% if request.GET.priority == 'medium' %}selected{% endif %}>Средний</option>
+                        <option value="high" {% if request.GET.priority == 'high' %}selected{% endif %}>Высокий</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="completed" class="form-select">
+                        <option value="">Все статусы</option>
+                        <option value="true" {% if request.GET.completed == 'true' %}selected{% endif %}>Выполнено</option>
+                        <option value="false" {% if request.GET.completed == 'false' %}selected{% endif %}>Не выполнено</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Применить</button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
 
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="card bg-primary text-white">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="bi bi-list"></i> Всего задач</h5>
-                                <h2 class="mb-0">{{ task_list|length }}</h2>
-                            </div>
-                        </div>
+    <!-- Список задач -->
+    <div class="row">
+        {% for task in tasks %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ task.title }}</h5>
+                    <p class="card-text">{{ task.description|truncatechars:100 }}</p>
+                    <div class="mb-2">
+                        <span class="badge bg-{% if task.priority == 'high' %}danger{% elif task.priority == 'medium' %}warning{% else %}info{% endif %}">
+                            {{ task.get_priority_display }}
+                        </span>
+                        {% if task.category %}
+                        <span class="badge bg-secondary">{{ task.category.name }}</span>
+                        {% endif %}
                     </div>
-                    <div class="col-md-3">
-                        <div class="card bg-success text-white">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="bi bi-check-circle"></i> Выполнено</h5>
-                                <h2 class="mb-0">{{ task_list|filter:"completed"|length }}</h2>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-warning text-dark">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="bi bi-clock"></i> В процессе</h5>
-                                <h2 class="mb-0">{{ task_list|rejectattr:"completed"|length }}</h2>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-danger text-white">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="bi bi-exclamation-circle"></i> Просрочено</h5>
-                                <h2 class="mb-0">{{ overdue_tasks|default:0 }}</h2>
-                            </div>
-                        </div>
-                    </div>
+                    {% if task.due_date %}
+                    <p class="text-muted">Срок: {{ task.due_date|date:"d.m.Y H:i" }}</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'task_detail' task.pk %}" class="btn btn-sm btn-primary">Подробнее</a>
+                    <a href="{% url 'task_update' task.pk %}" class="btn btn-sm btn-secondary">Редактировать</a>
+                    <a href="{% url 'task_delete' task.pk %}" class="btn btn-sm btn-danger">Удалить</a>
                 </div>
             </div>
         </div>
+        {% empty %}
+        <div class="col-12">
+            <p>Задачи не найдены.</p>
+        </div>
+        {% endfor %}
     </div>
-</div>
 
-<div class="row">
-    <div class="col-md-12">
-        {% if task_list %}
-            {% for task in task_list %}
-                <div class="card {% if task.completed %}task-completed{% endif %} task-priority-{{ task.priority|lower }} animate__animated animate__fadeIn">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input task-checkbox" {% if task.completed %}checked{% endif %}>
-                                <h5 class="card-title mb-0 {% if task.completed %}task-completed{% endif %}">{{ task.title }}</h5>
-                            </div>
-                            <div class="btn-group">
-                                <a href="{% url 'task_detail' task.pk %}" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                                <a href="{% url 'task_update' task.pk %}" class="btn btn-sm btn-outline-secondary">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <a href="{% url 'task_delete' task.pk %}" class="btn btn-sm btn-outline-danger">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </div>
-                        </div>
-                        <p class="card-text text-muted mt-2">{{ task.description|truncatewords:30 }}</p>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <small class="text-muted">
-                                <i class="bi bi-calendar"></i> Срок: {{ task.due_date|date:"d.m.Y" }}
-                            </small>
-                            <span class="badge {% if task.priority == 'HIGH' %}bg-danger{% elif task.priority == 'MEDIUM' %}bg-warning{% else %}bg-success{% endif %}">
-                                {{ task.get_priority_display }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <div class="card">
-                <div class="card-body text-center">
-                    <i class="bi bi-clipboard-check display-4 text-muted"></i>
-                    <h5 class="mt-3">Нет задач</h5>
-                    <p class="text-muted">Создайте свою первую задачу, нажав кнопку "Новая задача"</p>
-                </div>
-            </div>
-        {% endif %}
+    <div class="mt-4">
+        <a href="{% url 'task_create' %}" class="btn btn-success">Добавить задачу</a>
     </div>
 </div>
 {% endblock %} 
