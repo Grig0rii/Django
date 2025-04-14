@@ -12,7 +12,7 @@ def create_superuser():
         User.objects.create_superuser(
             username='Grigorii',
             email='shunin.grigorii@mail.ru',
-            password='20094908'
+            password='2009490878'
         )
         print('Суперпользователь создан успешно')
     else:
