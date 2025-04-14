@@ -8,4 +8,12 @@ class TaskForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
             'due_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+        labels = {
+            'title': 'Название задачи',
+            'description': 'Описание',
+            'completed': 'Выполнено',
+            'category': 'Категория',
+            'priority': 'Приоритет',
+            'due_date': 'Срок выполнения',
         } 

@@ -48,9 +48,15 @@ def task_create(request):
             form.save()
             messages.success(request, 'Задача успешно создана!')
             return redirect('task_list')
+        else:
+            messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
     else:
         form = TaskForm()
-    return render(request, 'tasks/task_form.html', {'form': form})
+    
+    return render(request, 'tasks/task_form.html', {
+        'form': form,
+        'categories': Category.objects.all()
+    })
 
 def task_update(request, pk):
     task = get_object_or_404(Task, pk=pk)
