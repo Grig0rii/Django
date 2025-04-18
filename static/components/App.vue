@@ -1,44 +1,74 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
-      <v-toolbar-title>Мой сайт</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn text>Главная</v-btn>
-      <v-btn text>О нас</v-btn>
-      <v-btn text>Контакты</v-btn>
-    </v-app-bar>
-
-    <v-main>
+    <v-main class="grey lighten-5">
       <v-container>
-        <v-row>
-          <v-col cols="12">
-            <v-card>
-              <v-card-title>Добро пожаловать</v-card-title>
-              <v-card-text>
-                Это базовый компонент с использованием Vuetify
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
+        <v-app-bar color="white" flat class="mb-4">
+          <v-toolbar-title>
+            <a href="{% url 'task_list' %}" class="text-decoration-none black--text">ToDoList</a>
+          </v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn text href="{% url 'task_list' %}" color="black">
+            Задачи
+          </v-btn>
+          <v-btn text href="{% url 'task_create' %}" color="black">
+            Добавить задачу
+          </v-btn>
+        </v-app-bar>
+
+        <slot name="messages"></slot>
+        <slot></slot>
       </v-container>
     </v-main>
-
-    <v-footer app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
   </v-app>
 </template>
 
 <script>
 export default {
-  name: 'App',
-  data: () => ({
-    //
-  }),
+  name: 'App'
 }
 </script>
 
 <style>
-@import 'https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css';
-@import 'https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css';
+.v-application {
+  background-color: #f5f5f5 !important;
+}
+
+.task-completed {
+  text-decoration: line-through;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.v-text-field.dense {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.v-text-field.dense .v-input__control {
+  min-height: 40px;
+}
+
+.v-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.task-card {
+  transition: transform 0.2s;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+}
+
+.priority-high {
+  border-left: 4px solid #ff5252;
+}
+
+.priority-medium {
+  border-left: 4px solid #ffd740;
+}
+
+.priority-low {
+  border-left: 4px solid #69f0ae;
+}
 </style> 
