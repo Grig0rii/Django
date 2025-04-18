@@ -5,7 +5,7 @@
 {% block content %}
     <h1>{% if form.instance.pk %}Редактирование задачи{% else %}Создание задачи{% endif %}</h1>
 
-    <form method="post" class="mb-4">
+    <form method="post" class="mb-4" id="task-form">
         {% csrf_token %}
 
         <div class="mb-3">
@@ -29,6 +29,15 @@
             {{ form.category }}
             {% if form.category.errors %}
                 <div class="alert alert-danger mt-1">{{ form.category.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.new_category.id_for_label }}" class="form-label">{{ form.new_category.label }}</label>
+            {{ form.new_category }}
+            <small class="form-text text-muted">{{ form.new_category.help_text }}</small>
+            {% if form.new_category.errors %}
+                <div class="alert alert-danger mt-1">{{ form.new_category.errors }}</div>
             {% endif %}
         </div>
 
@@ -73,6 +82,7 @@
             document.getElementById('{{ form.priority.id_for_label }}').classList.add('form-select');
             document.getElementById('{{ form.due_date.id_for_label }}').classList.add('form-control');
             document.getElementById('{{ form.completed.id_for_label }}').classList.add('form-check-input');
+            document.getElementById('{{ form.new_category.id_for_label }}').classList.add('form-control');
         });
     </script>
 {% endblock %} 

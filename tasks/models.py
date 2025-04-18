@@ -8,6 +8,18 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    @classmethod
+    def create_default_categories(cls):
+        default_categories = [
+            'Работа',
+            'Личное',
+            'Учеба',
+            'Здоровье',
+            'Финансы'
+        ]
+        for category_name in default_categories:
+            cls.objects.get_or_create(name=category_name)
+
 class Task(models.Model):
     PRIORITY_CHOICES = [
         ('low', 'Низкий'),
